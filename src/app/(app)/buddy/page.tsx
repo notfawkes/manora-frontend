@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import AmbientSky, { TimeOfDay } from "@/components/AmbientSky";
 import BuddyLivingCharacter from "@/components/BuddyLivingCharacter";
 import ThoughtCaption from "@/components/ThoughtCaption";
@@ -26,6 +27,15 @@ export default function BuddyPage() {
   const [showMemorySpore, setShowMemorySpore] = useState(false);
   const [lastRootedEmotion, setLastRootedEmotion] = useState<string>("Memory");
   const [timeOfDayOverride, setTimeOfDayOverride] = useState<TimeOfDay | undefined>(undefined);
+
+  const { data: session } = useSession();
+  const sessionIdRef = useRef<string>("");
+
+  useEffect(() => {
+    if (!sessionIdRef.current && typeof window !== "undefined") {
+      sessionIdRef.current = crypto.randomUUID();
+    }
+  }, []);
 
   // Request race-condition safeguard
   const latestRequestIdRef = useRef<number>(0);
@@ -54,8 +64,13 @@ export default function BuddyPage() {
     setIsLoading(true);
 
     try {
+      const userId = session?.user?.id || "anonymous-user";
+      const sessionId = sessionIdRef.current || "fallback-session-id";
+
       const response: InteractionResponse = await sendInteraction(
         userText,
+        userId,
+        sessionId,
         controller.signal
       );
 
