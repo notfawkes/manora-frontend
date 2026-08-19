@@ -6,8 +6,6 @@ import {
   InteractionResponse,
 } from "@/types/interaction";
 
-export const HARDCODED_USER_ID = "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d";
-export const HARDCODED_SESSION_ID = "1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed";
 export const BACKEND_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
@@ -110,11 +108,13 @@ export function resolveBuddyExpression(
  */
 export async function sendInteraction(
   text: string,
+  userId: string,
+  sessionId: string,
   signal?: AbortSignal
 ): Promise<InteractionResponse> {
   const payload: InteractionRequest = {
-    user_id: HARDCODED_USER_ID,
-    session_id: HARDCODED_SESSION_ID,
+    user_id: userId,
+    session_id: sessionId,
     text,
   };
 

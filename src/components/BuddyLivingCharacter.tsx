@@ -105,6 +105,7 @@ export default function BuddyLivingCharacter({
               src="/images/cloud_buddy.png"
               alt="Buddy Cloud Body"
               fill
+              sizes="(max-width: 768px) 256px, (max-width: 1024px) 384px, 432px"
               priority
               className="object-contain pointer-events-none select-none drop-shadow-[0_15px_35px_rgba(0,0,0,0.25)]"
             />
