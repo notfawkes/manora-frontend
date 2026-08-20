@@ -6,10 +6,10 @@ export async function middleware(req: NextRequest) {
   // Get token from NextAuth
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const isAuth = !!token;
-  
+
   // Define public/auth pages
-  const isAuthPage = 
-    req.nextUrl.pathname.startsWith("/login") || 
+  const isAuthPage =
+    req.nextUrl.pathname.startsWith("/login") ||
     req.nextUrl.pathname.startsWith("/register");
 
   // If user is on an auth page
