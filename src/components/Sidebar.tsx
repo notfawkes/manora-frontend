@@ -9,6 +9,7 @@ import {
   Clock3,
   Menu,
   X,
+  History,
 } from "lucide-react";
 import Logo from "../../public/images/manora-logo.png";
 import Image from "next/image";
@@ -29,6 +30,11 @@ const NAV_ITEMS = [
     label: "Timeline",
     href: "/timeline",
     icon: Clock3,
+  },
+  {
+    label: "Chat History",
+    href: "/chat-history",
+    icon: History,
   },
   {
     label: "Profile",
