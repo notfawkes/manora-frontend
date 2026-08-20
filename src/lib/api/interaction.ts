@@ -7,7 +7,7 @@ import {
 } from "@/types/interaction";
 
 export const BACKEND_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL || "https://ben-copular-kase.ngrok-free.dev";
+  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
 /**
  * Normalizes backend expression names to supported SVG expression identifiers

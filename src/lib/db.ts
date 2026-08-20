@@ -20,6 +20,17 @@ export const initDb = async () => {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `);
+
+    // Add extra profile fields dynamically
+    await client.query(`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS academic_program VARCHAR(255);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS year_of_study INTEGER;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS age INTEGER;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS gender VARCHAR(50);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS degree_level VARCHAR(100);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS custom_degree VARCHAR(255);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS photo TEXT;
+    `);
   } finally {
     client.release();
   }

@@ -7,6 +7,26 @@ import { Clock, Plus, BrainCircuit, ArrowRight, X } from "lucide-react";
 import { fetchTasks, createTask, predictTimeline } from "@/lib/api/timeline";
 import { TimelineTask, PredictionResponse } from "@/types/timeline";
 
+const formatTaskTime = (timeStr: string) => {
+  if (!timeStr) return "";
+  if (timeStr.includes("T")) {
+    try {
+      return new Date(timeStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      // Fallback
+    }
+  }
+  const parts = timeStr.split(":");
+  if (parts.length >= 2) {
+    const hour = parseInt(parts[0], 10);
+    const min = parts[1];
+    const ampm = hour >= 12 ? "PM" : "AM";
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${min} ${ampm}`;
+  }
+  return timeStr;
+};
+
 export default function AlternateTimelinePage() {
   const { data: session } = useSession();
   const userId = session?.user?.id;
@@ -33,11 +53,11 @@ export default function AlternateTimelinePage() {
     if (userId) {
       loadTasks();
     }
-  }, [userId]);
+  }, [userId, date]);
 
   const loadTasks = async () => {
     if (!userId) return;
-    const data = await fetchTasks(userId);
+    const data = await fetchTasks(userId, date);
     setTasks(data);
   };
 
@@ -45,17 +65,13 @@ export default function AlternateTimelinePage() {
     e.preventDefault();
     if (!userId) return;
 
-    // Combine date and time for ISO strings
-    const startIso = new Date(`${date}T${startTime}:00`).toISOString();
-    const endIso = new Date(`${date}T${endTime}:00`).toISOString();
-
     const success = await createTask({
       user_id: userId,
       title,
       description,
       date,
-      start_time: startIso,
-      end_time: endIso,
+      start_time: `${startTime}:00`,
+      end_time: `${endTime}:00`,
     });
 
     if (success) {
@@ -176,7 +192,7 @@ export default function AlternateTimelinePage() {
                   <div className="text-slate-400 text-sm mt-1 flex items-center gap-2">
                     <span>{task.date}</span>
                     <span>•</span>
-                    <span>{new Date(task.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - {new Date(task.end_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    <span>{formatTaskTime(task.start_time)} - {formatTaskTime(task.end_time)}</span>
                   </div>
                 </div>
               ))}

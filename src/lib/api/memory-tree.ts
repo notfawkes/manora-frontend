@@ -26,7 +26,13 @@ export async function getEmotionMemories(userId: string, emotion: string): Promi
 
 export async function getReflection(userId: string, emotion: string): Promise<ReflectionResponse | null> {
   try {
-    const res = await fetch(`${BACKEND_URL}/memory-tree/${userId}/reflect?emotion=${emotion}`);
+    const res = await fetch(`${BACKEND_URL}/memory-tree/${userId}/reflect`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ emotion }),
+    });
     if (!res.ok) throw new Error("Failed to fetch reflection");
     return await res.json();
   } catch (error) {

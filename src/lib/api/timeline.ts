@@ -1,9 +1,10 @@
 import { BACKEND_URL } from "./interaction";
 import { CreateTaskPayload, PredictionResponse, TimelineTask } from "@/types/timeline";
 
-export async function fetchTasks(userId: string): Promise<TimelineTask[]> {
+export async function fetchTasks(userId: string, date?: string): Promise<TimelineTask[]> {
   try {
-    const res = await fetch(`${BACKEND_URL}/alternate-timeline/tasks/${userId}`);
+    const queryDate = date || new Date().toISOString().split("T")[0];
+    const res = await fetch(`${BACKEND_URL}/alternate-timeline/tasks/${userId}?date=${queryDate}`);
     if (!res.ok) throw new Error("Failed to fetch tasks");
     const data = await res.json();
     return data.tasks || [];
@@ -15,11 +16,16 @@ export async function fetchTasks(userId: string): Promise<TimelineTask[]> {
 
 export async function createTask(payload: CreateTaskPayload): Promise<boolean> {
   try {
+    console.log("createTask payload being sent:", JSON.stringify(payload));
     const res = await fetch(`${BACKEND_URL}/alternate-timeline/tasks`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+    if (!res.ok) {
+      const errBody = await res.text();
+      console.error("createTask failed:", res.status, errBody);
+    }
     return res.ok;
   } catch (error) {
     console.error("Error creating task:", error);
