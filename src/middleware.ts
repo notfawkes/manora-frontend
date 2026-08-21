@@ -3,28 +3,37 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(req: NextRequest) {
-  // Get token from NextAuth
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const token = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+
   const isAuth = !!token;
+  const pathname = req.nextUrl.pathname;
 
-  // Define public/auth pages
-  const isAuthPage =
-    req.nextUrl.pathname.startsWith("/login") ||
-    req.nextUrl.pathname.startsWith("/register");
+  // Public routes
+  const isPublicRoute =
+    pathname === "/" ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/register");
 
-  // If user is on an auth page
-  if (isAuthPage) {
-    if (isAuth) {
-      // Redirect authenticated users away from auth pages to their buddy
-      return NextResponse.redirect(new URL("/buddy", req.url));
-    }
-    // Allow unauthenticated users to see auth pages
-    return null;
+  // If authenticated user visits login/register
+  if (
+    isAuth &&
+    (pathname.startsWith("/login") || pathname.startsWith("/register"))
+  ) {
+    return NextResponse.redirect(new URL("/buddy", req.url));
   }
 
-  // If user is not authenticated and trying to access a protected route or home page
+  // Allow public routes, including /
+  if (isPublicRoute) {
+    return NextResponse.next();
+  }
+
+  // Protect all other matched routes
   if (!isAuth) {
-    let from = req.nextUrl.pathname;
+    let from = pathname;
+
     if (req.nextUrl.search) {
       from += req.nextUrl.search;
     }
@@ -34,14 +43,10 @@ export async function middleware(req: NextRequest) {
     );
   }
 
-  // If user is authenticated and hits the root path, redirect to buddy page
-  if (req.nextUrl.pathname === "/") {
-    return NextResponse.redirect(new URL("/buddy", req.url));
-  }
+  return NextResponse.next();
 }
 
 export const config = {
-  // Apply middleware to specific paths
   matcher: [
     "/",
     "/login",

@@ -25,6 +25,21 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
+@keyframes buddy-levitate {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-18px);
+  }
+}
+
+.buddy-levitate {
+  animation: buddy-levitate 3.5s ease-in-out infinite;
+}
+
 /* Custom Cubic Bezier Heartbeat Pulse Animation */
 @keyframes flowerHeartbeat {
   0% {

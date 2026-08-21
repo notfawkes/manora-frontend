@@ -29,7 +29,7 @@ export default function LoginPage() {
       setError(res.error);
       setLoading(false);
     } else {
-      router.push("/buddy");
+      router.push("/");
       router.refresh();
     }
   };
