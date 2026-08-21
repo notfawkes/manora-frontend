@@ -1,5 +1,3 @@
-import { redirect } from "next/navigation";
-
-export default function AppPage() {
-  redirect("/buddy");
+export default function HomePage() {
+  return 'aha';
 }

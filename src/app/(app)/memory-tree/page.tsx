@@ -1,25 +1,42 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 import MemoryTreeGroup from "@/components/MemoryTreeGroup";
 import MemorySidebar from "@/components/MemorySidebar";
-import { memoryTreeData } from "./data";
+import { getMemoryNodes } from "@/lib/api/memory-tree";
+import { MemoryNodeResponse } from "@/types/memory-tree";
 
 export default function MemoryTreePage() {
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
 
-  const handleSelectNode = (nodeId: string) => {
+  const [selectedEmotion, setSelectedEmotion] = useState<string | null>(null);
+  const [nodes, setNodes] = useState<MemoryNodeResponse[]>([]);
+
+  useEffect(() => {
+    if (userId) {
+      loadNodes();
+    }
+  }, [userId]);
+
+  const loadNodes = async () => {
+    if (!userId) return;
+    const data = await getMemoryNodes(userId);
+    setNodes(data);
+  };
+
+  const handleSelectEmotion = (emotion: string) => {
     // If user clicks the currently selected flower, toggle it; otherwise select the new one
-    setSelectedNodeId((prev) => (prev === nodeId ? null : nodeId));
+    setSelectedEmotion((prev) => (prev === emotion ? null : emotion));
   };
 
   const handleCloseSidebar = () => {
-    setSelectedNodeId(null);
+    setSelectedEmotion(null);
   };
 
-  const selectedData = selectedNodeId ? memoryTreeData[selectedNodeId] || null : null;
-  const isSidebarOpen = Boolean(selectedNodeId && selectedData);
+  const isSidebarOpen = Boolean(selectedEmotion);
 
   return (
     <main className="relative min-h-screen w-full overflow-hidden bg-[#241F35]">
@@ -29,7 +46,7 @@ export default function MemoryTreePage() {
         alt="Atmospheric Background"
         fill
         priority
-        className="object-cover object-center pointer-events-none select-none"
+        className="object-cover object-center pointer-events-none select-none opacity-80"
       />
 
       {/* Subtle Twilight Gradient Vignette */}
@@ -41,14 +58,15 @@ export default function MemoryTreePage() {
           isSidebarOpen ? "md:pr-[460px] lg:pr-[480px]" : "md:pr-8"
         }`}
       >
-        {/* Top Header spacer / optional breadcrumb */}
+        {/* Top Header spacer */}
         <div className="h-6 flex items-center justify-between" />
 
         {/* Center Memory Tree Group with fixed aspect ratio */}
         <div className="relative my-auto flex w-full flex-col items-center justify-center transition-all duration-500 ease-in-out">
           <MemoryTreeGroup
-            selectedNodeId={selectedNodeId}
-            onSelectNode={handleSelectNode}
+            nodes={nodes}
+            selectedEmotion={selectedEmotion}
+            onSelectEmotion={handleSelectEmotion}
           />
         </div>
 
@@ -62,7 +80,8 @@ export default function MemoryTreePage() {
 
       {/* Right Drawer / Sidebar for Selected Memory Node */}
       <MemorySidebar
-        data={selectedData}
+        userId={userId}
+        emotion={selectedEmotion}
         isOpen={isSidebarOpen}
         onClose={handleCloseSidebar}
       />

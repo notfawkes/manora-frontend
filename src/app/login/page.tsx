@@ -29,7 +29,7 @@ export default function LoginPage() {
       setError(res.error);
       setLoading(false);
     } else {
-      router.push("/buddy");
+      router.push("/");
       router.refresh();
     }
   };
@@ -49,7 +49,7 @@ export default function LoginPage() {
       <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-[#100720]/80 pointer-events-none" />
 
       {/* Main Content Area */}
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 pt-16 pb-8 md:pl-64 md:pt-10 md:pb-10">
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 pt-16 pb-8 md:pt-10 md:pb-10">
         <div className="max-w-md w-full bg-slate-800/60 backdrop-blur-md rounded-2xl shadow-xl p-8 border border-white/10 relative z-20">
           <Link href="/" className="inline-flex items-center text-slate-300 hover:text-white mb-6 transition-colors">
             <ArrowLeft size={16} className="mr-2" />
