@@ -8,6 +8,7 @@ const imgBackground = "/images/background-home.png";
 const imgBuddy = "/images/cloud_buddy-home.png";
 const imgCloudChar = "/images/cloud_buddy.png";
 const imgTree = "/images/tree.png";
+const alternatetimeline = "/images/alternate-timeline.png"
 const imgQuiz = "/images/question.png";
 import svgPaths from "@/components/svg-path";
 
@@ -183,56 +184,128 @@ function MoodOption({
   );
 }
 
+
 function FeatureCard({
   title,
   subtitle,
   image,
   imageGlow,
+  href,
+  variant = "default",
 }: {
   title: string;
   subtitle: string;
   image?: string;
   imageGlow?: boolean;
+  href: string;
+  variant?: "default" | "questionnaire" | "timeline";
 }) {
+  const router = useRouter();
+
+  // Alternate Timeline
+  if (variant === "timeline") {
+    return (
+      <div className="relative flex-1 min-w-0 min-h-[620px] rounded-[22px] overflow-hidden shadow-[0px_4px_20px_0px_#9f9999]">
+        {/* Full-card image */}
+        {image && (
+          <ImageWithFallback
+            src={image}
+            alt={title}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
+
+        {/* Bottom transparent rectangle */}
+        <div className="absolute left-0 right-0 bottom-0 bg-white/50 backdrop-blur-[2px] p-6">
+          <h3
+            className="font-bold text-[30px] text-black leading-tight"
+            style={{ fontFamily: FONT }}
+          >
+            {title}
+          </h3>
+
+          <p
+            className="text-[20px] text-black leading-snug mt-3"
+            style={{ fontFamily: FONT }}
+          >
+            {subtitle}
+          </p>
+
+          <button
+            type="button"
+            className="mt-6 bg-[#f7f3ea] rounded-[22px] shadow-[0px_4px_20px_0px_#9f9999] px-5 py-5 flex items-center justify-between w-full hover:brightness-95 active:scale-95 transition-all duration-150"
+            style={{ fontFamily: FONT }}
+            onClick={() => router.push(href)}
+          >
+            <span className="font-semibold text-[20px] text-black">
+              Explore
+            </span>
+
+            <span className="font-semibold text-[20px] text-black leading-none">
+              {">"}
+            </span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Memory Tree + Questionnaire
   return (
-    <div className="flex-1 min-w-0 bg-[#ebead8] h-auto rounded-[22px] shadow-[0px_4px_20px_0px_#9f9999] overflow-hidden flex flex-col">
+    <div
+      className={`flex-1 min-w-0 min-h-[620px] rounded-[22px] overflow-hidden flex flex-col shadow-[0px_4px_20px_0px_#9f9999] ${
+        variant === "questionnaire"
+          ? "bg-gradient-to-br from-[#dcefff] via-[#d4eaff] to-[#c5e1f7]"
+          : "bg-[#ebead8]"
+      }`}
+    >
+      {/* TOP IMAGE */}
       <div
-        className={`relative h-45 sm:h-65 flex items-center justify-center p-2${imageGlow ? " shadow-[0px_4px_42.4px_0px_#8aab70]" : ""}`}
+        className={`relative h-[48%] flex-shrink-0 mb-18 flex items-center justify-center p-2 ${
+          imageGlow
+            ? "shadow-[0px_4px_42.4px_0px_#8aab70]"
+            : ""
+        }`}
       >
-        {image ? (
+        {image && (
           <ImageWithFallback
             src={image}
             alt={title}
             className="w-full h-full object-contain"
           />
-        ) : null}
+        )}
       </div>
-      <div className="flex flex-col flex-1 px-4 pt-6 pb-3 gap-2">
+
+      {/* BOTTOM CONTENT RECTANGLE */}
+      <div className="flex flex-col flex-1 bg-white/50 backdrop-blur-[2px] p-6">
         <h3
-          className="font-bold text-[30px] sm:text-[30px] text-black leading-tight"
+          className="font-bold text-[30px] text-black leading-tight"
           style={{ fontFamily: FONT }}
         >
           {title}
         </h3>
+
         <p
-          className="text-[11px] sm:text-[20px] text-black leading-snug"
+          className="text-[20px] text-black leading-snug mt-3"
           style={{ fontFamily: FONT }}
         >
           {subtitle}
         </p>
-        <div className="p-4">
+
         <button
-          className="mt-auto bg-[#f7f3ea] rounded-[22px] shadow-[0px_4px_20px_0px_#9f9999] px-5 py-5 flex items-center justify-between w-60 hover:brightness-95 active:scale-95 transition-all duration-150"
+          type="button"
+          className="mt-auto bg-[#f7f3ea] rounded-[22px] shadow-[0px_4px_20px_0px_#9f9999] px-5 py-5 flex items-center justify-between w-full hover:brightness-95 active:scale-95 transition-all duration-150"
           style={{ fontFamily: FONT }}
+          onClick={() => router.push(href)}
         >
-          <span className="font-semibold text-[12px] sm:text-[20px] text-black">
-            Explore
+          <span className="font-semibold text-[20px] text-black">
+            {variant === "questionnaire" ? "Start" : "Explore"}
           </span>
+
           <span className="font-semibold text-[20px] text-black leading-none">
-            {`>`}
+            {">"}
           </span>
         </button>
-        </div>
       </div>
     </div>
   );
@@ -348,23 +421,30 @@ export default function App() {
         </section>
 
         {/* ── Feature cards ── */}
-        <section className="flex gap-3">
-          <FeatureCard
-            title="Memory Tree"
-            subtitle="Explore what matters most to you"
-            image={imgTree}
-          />
-          <FeatureCard
-            title="Memory Tree"
-            subtitle="Explore what matters most to you"
-            image={imgQuiz}
-          />
-          <FeatureCard
-            title="Memory Tree"
-            subtitle="Explore what matters most to you"
-            image={imgQuiz}
-          />
-        </section>
+      <section className="flex gap-3">
+        <FeatureCard
+          title="Memory Tree"
+          subtitle="Explore what memory and emotion matters most to you"
+          image={imgTree}
+          href="/memory-tree"
+        />
+
+        <FeatureCard
+          title="Questionnaire"
+          subtitle="Get a health score by answering this"
+          image={imgQuiz}
+          href="/"
+          variant="questionnaire"
+        />
+
+        <FeatureCard
+          title="Alternate Timeline"
+          subtitle="See how different choices shape your tomorrow"
+          image={alternatetimeline}
+          href="/timeline"
+          variant="timeline"
+        />
+      </section>
       </div>
     </div>
   );

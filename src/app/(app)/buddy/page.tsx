@@ -11,17 +11,12 @@ import { BuddyExpression, InteractionResponse } from "@/types/interaction";
 import { resolveBuddyExpression, sendInteraction } from "@/lib/api/interaction";
 import { Sun, Moon, Sunrise, Sunset } from "lucide-react";
 
-const GREETINGS = [
-  "Hello Bala, I'm here with you.",
-  "I'm listening, take all the time you need.",
-  "How are you feeling in this moment?",
-  "Let's breathe together.",
-];
+const DEFAULT_GREETING = "Hello, I'm here with you.";
 
 export default function BuddyPage() {
   const [expression, setExpression] = useState<BuddyExpression>("neutral");
   const [buddyIntensity, setBuddyIntensity] = useState<number>(0.65);
-  const [thoughtText, setThoughtText] = useState<string>(() => GREETINGS[0]);
+  const [thoughtText, setThoughtText] = useState<string>(DEFAULT_GREETING);
   const [isTyping, setIsTyping] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showMemorySpore, setShowMemorySpore] = useState(false);
@@ -31,11 +26,20 @@ export default function BuddyPage() {
   const { data: session } = useSession();
   const sessionIdRef = useRef<string>("");
 
+  const userName = session?.user?.name || "Friend";
+
   useEffect(() => {
     if (!sessionIdRef.current && typeof window !== "undefined") {
       sessionIdRef.current = crypto.randomUUID();
     }
   }, []);
+
+  useEffect(() => {
+    if (session?.user?.name && thoughtText === DEFAULT_GREETING) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setThoughtText(`Hello ${session.user.name}, I'm here with you.`);
+    }
+  }, [session?.user?.name, thoughtText]);
 
   // Request race-condition safeguard
   const latestRequestIdRef = useRef<number>(0);
@@ -135,7 +139,7 @@ export default function BuddyPage() {
       "I'm right here with you.",
       "A quiet moment to just be.",
       "Take a soft breath with me.",
-      "You are doing your best, Bala.",
+      `You are doing your best, ${userName}.`,
     ];
     const phrase = tapPhrases[Math.floor(Math.random() * tapPhrases.length)];
     setThoughtText(phrase);

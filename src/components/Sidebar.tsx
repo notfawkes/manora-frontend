@@ -10,10 +10,12 @@ import {
   Menu,
   X,
   History,
+  LogOut,
 } from "lucide-react";
 import Logo from "../../public/images/manora-logo.png";
 import Image from "next/image";
 import { useState } from "react";
+import { signOut } from "next-auth/react";
 
 const NAV_ITEMS = [
   {
@@ -124,12 +126,15 @@ export default function Sidebar() {
         </nav>
 
         {/* Bottom Section */}
-        <div className="mt-auto border-t border-[#D2C4BC] pt-4">
+        <div className="mt-auto border-t border-[#D2C4BC] pt-4 flex flex-col gap-2">
+          
           <button
             type="button"
-            className="flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-medium text-[#665B55] transition-colors duration-200 hover:bg-[#DED0C8] hover:text-[#302824]"
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-[#665B55] transition-all duration-200 hover:bg-red-100 hover:text-red-700"
           >
-            Take a moment
+            <LogOut size={20} strokeWidth={1.8} className="shrink-0" />
+            <span className="text-sm font-medium">Sign Out</span>
           </button>
         </div>
       </aside>
